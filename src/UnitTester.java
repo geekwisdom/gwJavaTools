@@ -4,7 +4,8 @@ public class UnitTester {
 
 	public static void main(String[] args) {
 		
-	LogUnitTest();		
+	//LogUnitTest();
+	TestSettings();
 	return;
 	}
 
@@ -14,4 +15,11 @@ public class UnitTester {
 		myLogger.WriteLog(2,GWLogger.LogType.Error,"just a test3");	
 		return;
 	}
+
+public static void TestSettings()
+{
+	GWSettings mySettings = new GWSettings();
+	String r = mySettings.GetSetting("c:\\temp\\settingstest.config","test","default","");
+	System.out.println(r);
+}
 }
