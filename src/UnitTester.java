@@ -69,17 +69,21 @@ public static void TestData()
 public static void TestData2()
 {
 	try {
-		GWDataTable mytable = new GWDataTable("students","");
+		//GWDataTable mytable = new GWDataTable("","students");
+		GWDataTable mytable = new GWDataTable();
+				
 		LinkedHashMap<String,String> myrow = new LinkedHashMap<String,String>();
-	myrow.put("students.Name", "Brad");
-	myrow.put("students.Age", "43");
+	myrow.put("Name", "Brad");
+	myrow.put("Age", "43");
 	mytable.add(myrow);
 	LinkedHashMap<String,String> myrow2 = new LinkedHashMap<String,String>();
-	myrow2.put("students.Name", "Cathy");
-	myrow2.put("students.Age", "49");
-	
+	myrow2.put("Name", "Cathy");
+	myrow2.put("Age", "49");
+    	
 	mytable.add(myrow2);
-	System.out.println(mytable.toXml());
+	GWDataTable results = mytable.find("Name='Cathy'");
+	System.out.println(results.toXml());
+	//System.out.println(mytable.toXml());
 	}
 catch (Exception e)
 	{

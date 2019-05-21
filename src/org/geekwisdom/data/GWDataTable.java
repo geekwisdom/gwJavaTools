@@ -25,7 +25,7 @@ public class GWDataTable
 {
 private ArrayList<GWDataRow> data = new ArrayList<GWDataRow>();
 String xml="";
-String tablename="root";
+String tablename="table1";
 private	HashMap<String,String> parsedMap = new  LinkedHashMap<String,String>();
 
 public GWDataTable()
@@ -40,9 +40,10 @@ if (TableName == "") tablename="root";
 else tablename=TableName;
 }
 
-GWDataTable find (String whereclause)
+public GWDataTable find (String whereclause)
 {
 	String xmldata = toXml();
+	//System.out.println(xmldata);
 	GWDataTable retTable = new GWDataTable("",tablename);
 	try { 
    	 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -51,21 +52,36 @@ GWDataTable find (String whereclause)
 
          XPathFactory xpf = XPathFactory.newInstance();
          XPath xpath = xpf.newXPath();
-         String qry="/xmlDS/" + tablename + "[@" + whereclause + "]";
+         String qry="//xmlDS/" + tablename + "[" + whereclause + "]";
+        //System.out.println(qry); 
          
          NodeList nodes = (NodeList) xpath.evaluate(qry,document, XPathConstants.NODESET);
-         
+         //System.out.println("Length is: " + nodes.getLength());
          for (int i = 0; i < nodes.getLength(); i++) {
              //values.add(nodes.item(i).getNodeValue());
-        	 LinkedHashMap<String,String> item = new LinkedHashMap<String,String>();
-        	 item.put(nodes.item(i).getNodeName(),nodes.item(i).getNodeValue());
-        	 GWDataRow newcol = new GWDataRow(item);
-        	 retTable.add(newcol);
-        	 
+             Node node = nodes.item(i);
+             LinkedHashMap<String,String> theitem = new LinkedHashMap<String,String>();
+		for(Node childNode = node.getFirstChild(); childNode!=null;)
+                  {
+   			Node nextChild = childNode.getNextSibling();
+			String NodeName=childNode.getNodeName();
+			if (!NodeName.equals("#text"))
+			{        	
+			String NodeValue=childNode.getFirstChild().getNodeValue();
+			theitem.put(tablename + "." + NodeName,NodeValue.replace("%26","&"));
+			}
+		        childNode = nextChild;
+		}
+		if (theitem != null)
+			{
+//			System.out.println("Updating dataset");
+			GWDataRow newcol = new GWDataRow(theitem);
+       	    retTable.add(newcol);		
+			}
          }
          
 }
-	catch (Exception e) { }
+	catch (Exception e) {e.printStackTrace(); }
 	return retTable;
 }
 
@@ -181,7 +197,15 @@ public void add(GWDataRow newrow)
 public void add(HashMap<String,String> newrow)
 {
 	
-	GWDataRow col = new GWDataRow(newrow);
+	LinkedHashMap<String,String> newitem = new LinkedHashMap<String,String>();
+			
+		for (Map.Entry<String, String> entry : newrow.entrySet()) {
+		   String ColName = entry.getKey();
+		   if (ColName.indexOf(".") < 0) ColName = tablename + "." + ColName;
+		   String ColValue = entry.getValue();
+		   newitem.put(ColName, ColValue);	
+			}
+	GWDataRow col = new GWDataRow(newitem);
 	if (validatearray(col)) data.add(col);
 }
 
@@ -200,7 +224,7 @@ WriteXml(sw,"");
 public void WriteXml(StringWriter finalsw,String nodename)
 {
 int colstart=0;
-if (nodename == "") nodename=tablename;
+if (nodename == "") nodename="xmlDS";
 else colstart=1;
 StringWriter sw = new StringWriter();
 for (int i=0;i<data.size();i++)
