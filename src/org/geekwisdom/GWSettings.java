@@ -187,6 +187,34 @@ public class GWSettings {
     return "";
     }
 	
+    public String GetSettingReverse (String FromLocation, String settingName)
+    {
+    	//get the 'reverse' setting in a .NET styel config 
+    	try { 
+    	 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+          DocumentBuilder db = dbf.newDocumentBuilder();
+          Document document = db.parse(new FileInputStream(new File(FromLocation)));// same xml comments as above.
+
+          XPathFactory xpf = XPathFactory.newInstance();
+          XPath xpath = xpf.newXPath();
+          String key="//add[@value='" + settingName + "']";
+          
+          Element userElement = (Element) xpath.evaluate(key, document,
+              XPathConstants.NODE);
+          String value=userElement.getAttribute("key");
+          //System.out.println(value);
+          return value;
+    	 }
+    	 catch (Exception e2)
+    	 {
+    		 //e2.printStackTrace();
+    		 return "";
+    	 }
+    	 
+    }
+
+    
+    
     private String ReadSettingFromNetFile (String FromLocation, String settingName)
     {
     	 try { 
@@ -196,7 +224,9 @@ public class GWSettings {
 
           XPathFactory xpf = XPathFactory.newInstance();
           XPath xpath = xpf.newXPath();
-          Element userElement = (Element) xpath.evaluate("//add[@key='" + settingName + "']\"", document,
+          String key="//add[@key='" + settingName + "']";
+          
+          Element userElement = (Element) xpath.evaluate(key, document,
               XPathConstants.NODE);
           String value=userElement.getAttribute("value");
           //System.out.println(value);
@@ -204,6 +234,7 @@ public class GWSettings {
     	 }
     	 catch (Exception e2)
     	 {
+    		 //e2.printStackTrace();
     		 return "";
     	 }
     	 
