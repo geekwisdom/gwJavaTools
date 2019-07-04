@@ -1,4 +1,19 @@
-package org.geekwisdom.data;
+/**************************************************************************************
+' Script Name: GWDataTable.java
+' **************************************************************************************
+' @(#)    Purpose:
+' @(#)    This is a shared component available to all JAVA applications. It allows a common 
+' @(#)    data row / data table object that for manipulating sets of related data abstractly.
+' @(#)    Regardless of the specific architecture (database, files, xml, json used)
+' **************************************************************************************
+'  Written By: Brad Detchevery
+' Created:     2019-05-29 - Initial Architecture
+' 
+' **************************************************************************************
+'Note: Changing this routine effects all programs that manipulate data sets
+'-------------------------------------------------------------------------------*/
+
+package org.geekwisdom;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.StringReader;
