@@ -10,16 +10,18 @@ import java.util.Map;
 
 import org.geekwisdom.*;
 
-import org.geekwisdom.data.GWDataRow;
-import org.geekwisdom.data.GWDataTable;
+import org.geekwisdom.GWDataRow;
+import org.geekwisdom.GWDataTable;
 
 public class UnitTester {
 
 	public static void main(String[] args) {
-		
+		//TestStudentService();
+		TestFileIO();
 	//LogUnitTest();
 	//TestSettings();
-	TestData2();
+	//TestData2();
+	//TestStudent();
 	return;
 	}
 
@@ -32,13 +34,25 @@ public class UnitTester {
 
 public static void TestSettings()
 {
-	GWSettings mySettings = new GWSettings();
+	GWSettings mySettings = new GWSettings();	
 	String r = mySettings.GetSetting("c:\\temp\\settingstest.config","test","default","");
 	String r2 = mySettings.GetSettingReverse("c:\\temp\\settingstest.config","Cool Dude");
 	System.out.println(r);
 	System.out.println(r2);
 }
 
+public static void TestFileIO()
+{
+	//Method #1 
+	//GWDataIO FileTest = new GWDataIO();
+	//FileTest.insert("test","c:\\temp\\DataIOTest.config");
+	//Medhot #2
+	GWDataIO FileTest = new GWDataIO("c:\\temp\\DataIOTest.config");
+	FileTest.insert("{\"Name\":\"Brad\",\"Address\":\"Test\",\"ID\":\"4\"}");
+	GWDataTable result = FileTest.search("Name='Brad'");
+	System.out.println(result.toXml());
+	
+}
 public static void TestData()
 {
 	try {
@@ -47,7 +61,7 @@ public static void TestData()
 	mytable.loadXml(xmldata);
 	for (int i=0;i<mytable.length();i++)
 	{
-		GWDataRow col = mytable.getRow(i);
+		GWRowInterface col = mytable.getRow(i);
 		Iterator it = col.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry pair = (Map.Entry)it.next();
@@ -63,7 +77,26 @@ public static void TestData()
 	{
 		e.printStackTrace();
 	}
-	
+}
+	public static void TestStudent()
+	{
+		try {
+		String xmldata = readFile("c:\\temp\\student.xml",  StandardCharsets.UTF_8);
+		GWDataTable mytable = new GWDataTable("","root","student");
+		mytable.loadXml(xmldata);
+		GWDataTable ret = mytable.find("Name='Mike Gold'");
+		 System.out.println("Len is " + ret.length());
+		for (int i=0;i<ret.length();i++)
+		{
+			student col = (student) ret.getRow(i);
+				 System.out.println("Name is " + col.getName());
+		}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
 }
 
 public static void TestData2()
@@ -99,4 +132,15 @@ static String readFile(String path, Charset encoding)
 		  return new String(encoded, encoding);
 		}
 
+
+
+static void TestStudentService()
+{
+	StudentService myStudents = new StudentService();
+	myStudents.insert("{\"Name\":\"Brad\",\"Address\":\"Test\",\"ID\":\"4\"}");
+	GWDataTable all =myStudents.search("ID > 0");
+	student first=(student) all.getRow(0);
+	System.out.println ("Name is " + first.getName());
+	
+}
 }

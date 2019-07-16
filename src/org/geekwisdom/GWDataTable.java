@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -38,9 +39,10 @@ import org.xml.sax.InputSource;
 
 public class GWDataTable 
 {
-private ArrayList<GWDataRow> data = new ArrayList<GWDataRow>();
+private ArrayList<GWRowInterface> data = new ArrayList<GWRowInterface>();
 String xml="";
 String tablename="table1";
+String defObject="org.geekwisdom.GWDataRow";
 private	HashMap<String,String> parsedMap = new  LinkedHashMap<String,String>();
 
 public GWDataTable()
@@ -55,9 +57,22 @@ if (TableName == "") tablename="root";
 else tablename=TableName;
 }
 
+public GWDataTable(String xmlinfo,String TableName,String _defObject)
+{
+xml=xmlinfo;
+if (TableName == "") tablename="root";
+else tablename=TableName;
+defObject=_defObject;
+}
+
+
 public GWDataTable find (String whereclause)
 {
-	String xmldata = toXml();
+	return find(whereclause,defObject);
+}
+public GWDataTable find (String whereclause,String rowType)
+{	
+String xmldata = toXml();
 	//System.out.println(xmldata);
 	GWDataTable retTable = new GWDataTable("",tablename);
 	try { 
@@ -67,8 +82,9 @@ public GWDataTable find (String whereclause)
 
          XPathFactory xpf = XPathFactory.newInstance();
          XPath xpath = xpf.newXPath();
+         //tablename="Student";
          String qry="//xmlDS/" + tablename + "[" + whereclause + "]";
-        //System.out.println(qry); 
+ //       System.out.println(qry); 
          
          NodeList nodes = (NodeList) xpath.evaluate(qry,document, XPathConstants.NODESET);
          //System.out.println("Length is: " + nodes.getLength());
@@ -90,7 +106,9 @@ public GWDataTable find (String whereclause)
 		if (theitem != null)
 			{
 //			System.out.println("Updating dataset");
-			GWDataRow newcol = new GWDataRow(theitem);
+			Class clazz = Class.forName(rowType);
+			Constructor c = Class.forName(rowType).getDeclaredConstructor(HashMap.class);
+			GWRowInterface newcol = (GWRowInterface) c.newInstance(theitem);
        	    retTable.add(newcol);		
 			}
          }
@@ -135,9 +153,21 @@ private void ReadXml(String XMLInput) {
     catch (Exception e) {             System.out.println("Please specify an XML source [LOG IT!]");
 }
     Element root = doc.getDocumentElement();
-    tablename=root.getNodeName();
-    GWDataRow newrow = new GWDataRow(readnode(root,"",""));
-	 data.add(newrow);
+    Node firstChlid = root.getFirstChild().getNextSibling();
+    tablename=firstChlid.getNodeName();
+    try {
+    Class clazz = Class.forName(defObject);
+	Constructor c = Class.forName(defObject).getDeclaredConstructor(HashMap.class);
+	GWRowInterface newrow = (GWRowInterface) c.newInstance(readnode(root,"",""));
+	data.add(newrow);
+    }
+    catch (Exception e)
+    {
+    	GWDataRow newrow = new GWDataRow(readnode(root,"",""));
+    	data.add(newrow);
+    }
+    //
+	 
      
    // data.add(item);
 }
@@ -199,12 +229,12 @@ private HashMap<String, String> readnode(Node node, String buildedKey,String las
     return parsedMap;
 }
 
-public GWDataRow getRow(int RowNum)
+public GWRowInterface getRow(int RowNum)
 {
 return data.get(RowNum);	
 }
 
-public void add(GWDataRow newrow)
+public void add(GWRowInterface newrow)
 {
 	data.add(newrow);
 }
@@ -244,7 +274,7 @@ else colstart=1;
 StringWriter sw = new StringWriter();
 for (int i=0;i<data.size();i++)
   {
-  GWDataRow col = data.get(i);
+  GWRowInterface col = data.get(i);
   HashMap<String,String> item = col.toArray();
   String header="";
   String footer="";

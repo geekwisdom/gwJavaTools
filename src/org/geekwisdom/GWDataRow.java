@@ -16,7 +16,7 @@
 package org.geekwisdom;
 import java.util.*;
 import java.util.Map.Entry;
-public class GWDataRow  {
+public class GWDataRow implements GWRowInterface {
 private LinkedHashMap<String,String> dataItem;
 
 public GWDataRow (HashMap<String,String> i)
@@ -30,9 +30,19 @@ public void set(String key,String value)
 dataItem.put(key, value);
 }
 
-public String get(String key,String value)
+public String get(String key)
 {
 String result = dataItem.get(key);
+if (result == null) 
+{
+	for (Map.Entry<String, String> entry : dataItem.entrySet()) {
+		   String ColName = entry.getKey();
+		   String []a = ColName.split("\\.");
+	       if (a.length > 0) ColName = a[a.length-1];
+		   String ColValue = entry.getValue();
+		   if (ColName.equals(key))  return ColValue;
+	}
+}
 return result;
 }
 

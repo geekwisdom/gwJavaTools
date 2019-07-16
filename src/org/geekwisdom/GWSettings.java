@@ -85,6 +85,11 @@ public class GWSettings {
     	return GetSetting(SettingName,"");
     }
 
+    public String GetSetting(String FromLocation, String SettingName, String DefaultValue)
+    {
+    	return GetSetting(FromLocation, SettingName, DefaultValue, "");
+    }
+    
     public String GetSetting(String FromLocation, String SettingName, String DefaultValue, String VersionNumber)
     {
     	File f = new File(FromLocation);

@@ -4,5 +4,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/Users/Robyn/Documents/Private/prog/eclipsews/javalib/log4j-api-2.6.2.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Robyn/Documents/Private/prog/eclipsews/javalib/log4j-core-2.6.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Robyn/Documents/Private/prog/eclipsews/javalib/jboss-jsp-api.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Robyn/Documents/Private/prog/eclipsews/javalib/jboss-servlet-api.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Robyn/Documents/Private/prog/eclipsews/javalib/json.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
