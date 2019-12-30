@@ -23,13 +23,13 @@ import org.geekwisdom.*;
 public class UnitTester {
 
 	public static void main(String[] args) {
-	//	TestJavaDBGWQL();
+		TestJavaDBGWQL();
 	//	TestStudentService();
 //				TestFileIO();
 		//TestStudentService();
 		//TestData2();
 		//TestParsedCommand();
-		TestGWQL();
+	//	TestGWQL();
 		/*
 		try {
 		TestError();
@@ -230,9 +230,9 @@ static void TestStudentService()
 static void TestJavaDB()
 {
 	//java database connection testing
-	 String url = "jdbc:mysql://192.168.0.15:3306/braddb?useSSL=false";
+	 String url = "jdbc:mysql://localhost:3306/test?useSSL=false";
      String user = "adminbrad";
-     String password = "blc4fr";
+     String password = "password";
      
      String query = "SELECT * FROM sec_UsersTable WHERE ";
 
@@ -266,9 +266,9 @@ static void TestJavaDB()
 static void TestJavaDBGWQL()
 {
 	//java database connection testing
-	 String url = "jdbc:mysql://192.168.0.15:3306/braddb?useSSL=false";
+	 String url = "jdbc:mysql://localhost:3306/test?useSSL=false";
      String user = "adminbrad";
-     String password = "blc4fr";
+     String password = "password";
      
      String query = "SELECT * FROM sec_UsersTable WHERE ";
      HashMap<String,String> allowedFields = new HashMap<String,String>();
@@ -313,7 +313,8 @@ static void TestJavaDBGWQL()
     	 System.out.println("==============================================================");
          while (rs.next()) {
              
-             String theline =  rs.getString(1) + "\t" + rs.getString(2) + "   \t" + rs.getString(3) +  "\t" + rs.getString(4) + "\t\t" + rs.getString(5);
+            // String theline =  rs.getString(1) + "\t" + rs.getString(2) + "   \t" + rs.getString(3) +  "\t" + rs.getString(4) + "\t\t" + rs.getString(5);
+             String theline =  rs.getString(1) + "\t" + rs.getString(2) + "   \t" + rs.getString(3);
         	 System.out.println(theline);
          }
     			 }
