@@ -32,10 +32,14 @@ public class GWDataFileIO extends GWDataIO{
 	}
 	
 	@Override
-	public GWDataTable search(String whereclause, String configfile) 
+	public GWDataTable search(String whereclause, String configfile) throws GWException 
 	{
-	this.loadData(configfile);
-	GWDataTable ret = this.dataTable.find(whereclause);
+		GWDataTable ret;
+		this.loadData(configfile);
+	try {
+	 ret = this.dataTable.find(whereclause);
+	}
+	catch (GWException e) { throw e; }
 	return ret;
 	}
 	

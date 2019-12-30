@@ -104,13 +104,14 @@ public class GWDataIO implements GWDataIOInterface {
 	}
 
 	@Override
-	public GWDataTable search(String whereclause, String configfile) {
+	public GWDataTable search(String whereclause, String configfile) throws GWException
+	{
 		// TODO Auto-generated method stub
 		return getInstance(configfile).search(whereclause);
 	}
 
 	@Override
-	public GWDataTable search(String whereclause) {
+	public GWDataTable search(String whereclause)  throws GWException{
 		// TODO Auto-generated method stub
 		return search(whereclause,_configFile);
 	}

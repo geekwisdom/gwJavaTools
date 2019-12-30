@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="C:/Users/Robyn/Documents/Private/prog/eclipsews/javalib/jboss-jsp-api.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Robyn/Documents/Private/prog/eclipsews/javalib/jboss-servlet-api.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Robyn/Documents/Private/prog/eclipsews/javalib/json.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Robyn/Documents/Private/prog/eclipsews/javalib/mysql-connector-java-5.1.39-bin.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

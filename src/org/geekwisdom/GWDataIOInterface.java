@@ -27,8 +27,8 @@ public interface GWDataIOInterface {
 	public String insert(String JSONROW);
 	public String update(String JSONROW,String configfile);
 	public String update(String JSONROW);
-	public GWDataTable search(String whereclause,String configfile);
-	public GWDataTable search(String whereclause);
+	public GWDataTable search(String whereclause,String configfile) throws GWException;
+	public GWDataTable search(String whereclause) throws GWException;
 	public String delete(String id,String configfile);
 	public String delete(String id);
 	public String lock(String id,String configfile);

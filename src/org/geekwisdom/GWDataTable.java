@@ -36,14 +36,17 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import org.json.*;
 public class GWDataTable 
 {
 private ArrayList<GWRowInterface> data = new ArrayList<GWRowInterface>();
 String xml="";
 String tablename="table1";
 String defObject="org.geekwisdom.GWDataRow";
-private	HashMap<String,String> parsedMap = new  LinkedHashMap<String,String>();
+private	LinkedHashMap<String,String> parsedMap = new  LinkedHashMap<String,String>();
 
 public GWDataTable()
 {
@@ -66,13 +69,25 @@ defObject=_defObject;
 }
 
 
-public GWDataTable find (String whereclause)
+public GWDataTable find (String whereclause) throws GWException
 {
-	return find(whereclause,defObject);
+ 
+			try {
+				return find(whereclause,defObject);
+			}
+	catch (GWException e) { throw e; }
 }
-public GWDataTable find (String whereclause,String rowType)
+public GWDataTable find (String qlwhereclause,String rowType) throws GWException
 {	
-String xmldata = toXml();
+	GWQL xPathTester = new GWQL(qlwhereclause);
+	GWQLXPathBuilder myxpath = new GWQLXPathBuilder();
+	String whereclause="";
+	try
+	{
+	whereclause = xPathTester.getCommand(myxpath);
+	}
+	catch (GWException e) { throw e; }
+	String xmldata = toXml();
 	//System.out.println(xmldata);
 	GWDataTable retTable = new GWDataTable("",tablename);
 	try { 
@@ -255,6 +270,63 @@ public void add(HashMap<String,String> newrow)
 }
 
 
+public String toJSON()
+{
+//Writre out current object as JSON String
+JSONArray j = new JSONArray();
+//SrrayList<LinkedHashMap<String,String>> mylist = new <LinkedHashMap<String,String>>();
+ArrayList<LinkedHashMap<String, String>> mylist = new ArrayList<LinkedHashMap<String, String>>();
+String TableName = this.tablename;
+for (int i=0;i<data.size();i++) 
+{ 
+	//JSONObject jo = new JSONObject();
+	JSONArray ja = new JSONArray();
+	
+	 LinkedHashMap<String,String> newitem = new LinkedHashMap<String,String>();
+	 GWRowInterface col = data.get(i);
+	 LinkedHashMap<String,String> item = col.toArray();
+	for (Map.Entry<String, String> entry : item.entrySet()) 
+	  {
+	    String key = entry.getKey();
+	    //System.out.println("Key is: " + key);
+	    String value = entry.getValue();
+	    String []a = key.split("\\.");
+	    String TableNameTest = a[0];
+	    if (TableName.contentEquals(TableNameTest))
+	    {
+	    	String TrueKey = a[1];
+	    	if (value !=null) 
+		    {
+		    		value = value.toString().replace("&","%26");
+		    		try
+		    		{
+		    		newitem.put(TrueKey,value);
+		    		//	jo.put(TrueKey, value);
+		    		}
+		    		catch (Exception e) { }
+		    }
+	    	else
+	    	{
+	    		try { newitem.put(TrueKey,null);} catch (Exception e) { }
+	    	}
+	    }
+	    }
+mylist.add(newitem);
+	//j.put(newitem);
+}
+JSONObject resJSON = new JSONObject();
+try
+{
+resJSON.put(TableName, mylist);
+}
+catch (Exception e) { }
+		
+String result;
+result = resJSON.toString();
+return result;
+}
+
+
 
 public String toXml()
 {
@@ -275,7 +347,7 @@ StringWriter sw = new StringWriter();
 for (int i=0;i<data.size();i++)
   {
   GWRowInterface col = data.get(i);
-  HashMap<String,String> item = col.toArray();
+  LinkedHashMap<String,String> item = col.toArray();
   String header="";
   String footer="";
   String Retval="";

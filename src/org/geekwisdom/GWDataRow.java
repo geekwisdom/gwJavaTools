@@ -25,6 +25,13 @@ dataItem = (LinkedHashMap<String,String>) i;
 }
 
 
+public GWDataRow ()
+{
+dataItem = new LinkedHashMap<String,String>();
+}
+
+
+
 public void set(String key,String value)
 {
 dataItem.put(key, value);
@@ -60,12 +67,12 @@ public Set<Entry<String,String>> entrySet()
 	}
 	return retval.entrySet();
 	}
-public HashMap<String,String> toArray()
+public LinkedHashMap<String,String> toArray()
 {
 	//return copy of item without the "." column info
 	LinkedHashMap<String,String> retval = new LinkedHashMap<String,String>();
-	
 	return dataItem;
+	//return dataItem;
 }
 
 public HashMap<String,String> toRawArray()
