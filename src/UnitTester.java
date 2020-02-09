@@ -23,13 +23,15 @@ import org.geekwisdom.*;
 public class UnitTester {
 
 	public static void main(String[] args) {
-		TestJavaDBGWQL();
+		//TestJavaDBGWQL2();
 	//	TestStudentService();
 //				TestFileIO();
 		//TestStudentService();
-		//TestData2();
+		//TestData3();
 		//TestParsedCommand();
-	//	TestGWQL();
+		TestWebServiceServer();
+		//TestWebServiceServer2();
+		//TestGWQL();
 		/*
 		try {
 		TestError();
@@ -188,8 +190,11 @@ public static void TestData2()
     	
 	mytable.add(myrow2);
 	//GWDataTable results = mytable.find("[ Name _EQ_ 'Cathy' _OR_ Name _EQ_ 'Brad' ] ");
-	GWDataTable results = mytable.find("[ Name _LIKE_ 'Cat' ] ");
-	System.out.println(results.toXml());
+	GWDataTable results = mytable.find("[ Name _LIKE_ \"Cat\" ] ");
+	
+	
+	//System.out.println(results.toXml());
+	System.out.println(results.toJSON());
 	//System.out.println(mytable.toXml());
 	}
 catch (Exception e)
@@ -197,6 +202,39 @@ catch (Exception e)
 	e.printStackTrace();
 	}
 }
+
+
+public static void TestData3()
+{
+	try {
+		//GWDataTable mytable = new GWDataTable("","students");
+		GWDataTable mytable = new GWDataTable();
+				
+		//LinkedHashMap<String,String> myrow = new LinkedHashMap<String,String>();
+		GWDataRow myrow = new GWDataRow();
+	myrow.set("Name", "Brad");
+	myrow.set("Age", "43");
+	mytable.add(myrow);
+	GWDataRow myrow2 = new GWDataRow();
+	myrow2.set("Name", "Cathy");
+	myrow2.set("Age", "49");
+    	
+	mytable.add(myrow2);
+	//GWDataTable results = mytable.find("[ Name _EQ_ 'Cathy' _OR_ Name _EQ_ 'Brad' ] ");
+	GWDataTable results = mytable.find("[ Name _LIKE_ \"Cat\" ] ");
+	
+	
+	//System.out.println(results.toXml());
+	System.out.println(results.toJSON());
+	//System.out.println(mytable.toXml());
+	}
+catch (Exception e)
+	{
+	e.printStackTrace();
+	}
+}
+
+
 
 
 static String readFile(String path, Charset encoding) 
@@ -225,6 +263,33 @@ static void TestStudentService()
 	
 	
 }
+
+static void TestWebServiceServer()
+{
+
+	//$myWebService = new GWEZWebService("def","./","adminbrad123");
+	GWEZWebService myWebService = new GWEZWebService("abc","c:/temp/","adminbrad123");
+	ArrayList<String> Params = new ArrayList<String>();
+	Params.add("LogVerbosity");
+	String result=myWebService.Fulfill("GetSetting",Params,"JSON");
+	//$rstr=$result->toXML();
+	System.out.println( "Result is " + result);
+	
+}
+
+static void TestWebServiceServer2()
+{
+	//REMINDERS: the def.xml operation MUST be in the JAVA CLASS PATH (Eg: MathClass.jar!)
+	GWEZWebService myWebService = new GWEZWebService("def","c:/temp/","adminbrad123");
+	ArrayList<String> Params = new ArrayList<String>();
+	Params.add("A=1");
+	Params.add("B=3");
+	String result=myWebService.Fulfill("Add",Params,"JSON");
+	//$rstr=$result->toXML();
+	System.out.println( "Result is " + result);
+	
+}
+
 
 
 static void TestJavaDB()
@@ -327,6 +392,71 @@ static void TestJavaDBGWQL()
          ex.printStackTrace();
      } 
 }
+
+
+static void TestJavaDBGWQL2()
+{
+	//java database connection testing
+	 GWDBConnection myconnection = new GWDBConnection("c:/temp/testconn.dsn");
+     
+     String query = "SELECT * FROM sec_UsersTable WHERE ";
+     HashMap<String,String> allowedFields = new HashMap<String,String>();
+     allowedFields.put("ID","UserID");
+     
+     try {
+    	 
+    	 String where_clause="";
+    	 while (!(where_clause.equals("QUIT")))
+    			 {
+    	 System.out.print("\nEnter Query: ");
+   		 
+    	BufferedReader SystemIn = new BufferedReader(new InputStreamReader(System.in));
+    	where_clause=SystemIn.readLine();
+    	
+    	GWQL sqltester = new GWQL(where_clause);
+    	sqltester.setAllowedFields(allowedFields);
+		GWQLSqlStringBuilder mysqlbuilder = new GWQLSqlStringBuilder();
+		String finalCmd="";
+
+	try {
+		finalCmd= sqltester.getCommand(mysqlbuilder);
+	}
+	catch (GWException gw1)
+    {
+   	    	 gw1.printStackTrace();
+   	 return;
+    }
+
+	System.out.println(sqltester.getFlag("locked"));    
+	PreparedStatement st;
+	if (sqltester.getFlag("locked")) st= myconnection.prepare(query+" locked = true AND " + finalCmd);
+	else st= myconnection.prepare(query+finalCmd);
+         ArrayList<String> p = mysqlbuilder.getParams();
+         for (int i=0;i<p.size();i++) 
+        	  {
+        	 //System.out.println("i:" + i + "d: " + p.get(i));
+        	 st.setString(i+1, p.get(i));
+        	  }
+         ResultSet rs = st.executeQuery();		 
+    	 System.out.println("ID\tUser ID \tLocked\tFirst Name\tLast Name");
+    	 System.out.println("==============================================================");
+         while (rs.next()) {
+             
+            // String theline =  rs.getString(1) + "\t" + rs.getString(2) + "   \t" + rs.getString(3) +  "\t" + rs.getString(4) + "\t\t" + rs.getString(5);
+             String theline =  rs.getString(1) + "\t" + rs.getString(2) + "   \t" + rs.getString(3);
+        	 System.out.println(theline);
+         }
+    			 }
+     } 
+     
+ 
+     
+     catch (Exception ex) {
+         
+         ex.printStackTrace();
+     } 
+}
+
 
 
 

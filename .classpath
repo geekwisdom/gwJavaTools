@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="F:/prog/java/eclipsews/javalib/jboss-servlet-api.jar"/>
 	<classpathentry kind="lib" path="F:/prog/java/eclipsews/javalib/json.jar"/>
 	<classpathentry kind="lib" path="F:/prog/java/eclipsews/javalib/mysql-connector-java-5.1.39-bin.jar"/>
+	<classpathentry kind="lib" path="H:/prog/java/eclipsews/javalib/mathclass.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

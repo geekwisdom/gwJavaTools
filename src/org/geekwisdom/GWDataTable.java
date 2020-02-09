@@ -251,7 +251,11 @@ return data.get(RowNum);
 
 public void add(GWRowInterface newrow)
 {
-	data.add(newrow);
+	//data.add(newrow);
+	LinkedHashMap<String,String> newitem = new LinkedHashMap<String,String>();
+	newitem=newrow.toArray();
+	add(newitem);
+	
 }
 
 public void add(HashMap<String,String> newrow)

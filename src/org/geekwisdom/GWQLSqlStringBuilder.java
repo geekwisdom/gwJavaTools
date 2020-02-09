@@ -80,6 +80,7 @@ public class GWQLSqlStringBuilder implements GWQLCmdBuilderInterface {
 	public String getFinalCmd()
 	{
 		//return commandPart;
+		System.out.println(runningString);
 		commandPart = runningString.replace("[", mymap.get("OPENBRACKET"));
 		commandPart = commandPart.replace("]", mymap.get("CLOSEBRACKET"));
 		if (commandPart.substring(0, 1).equals("(")) commandPart = commandPart.substring(1);

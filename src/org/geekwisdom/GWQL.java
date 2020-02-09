@@ -50,10 +50,11 @@ private String setFlags(String clause_input)
     String retval = clause_input.substring(0,last+1);
     //System.out.println("Last is " + last);
     //System.out.println("Len is " + clause_input.length());
-    if (last+1 < clause_input.length())
+    if (last+2 < clause_input.length())
     {
     String flagsStr = clause_input.substring(last+2);
     //System.out.println(flagsStr);
+    
     String [] flags = flagsStr.split(" ");
     for (int i=0;i<flags.length;i++)
     {

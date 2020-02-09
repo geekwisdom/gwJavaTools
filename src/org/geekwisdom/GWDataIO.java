@@ -52,6 +52,7 @@ public class GWDataIO implements GWDataIOInterface {
 		//Hmm. what happens here?
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Override
 		public GWDataIOInterface getInstance(String configfile) {
 		// TODO Auto-generated method stub
@@ -62,6 +63,7 @@ public class GWDataIO implements GWDataIOInterface {
 		//System.out.println(objType);
 		try {
 			
+			@SuppressWarnings("rawtypes")
 			Class clazz = Class.forName(objType);
 			Constructor c = Class.forName(objType).getDeclaredConstructor(String.class,String.class);
 			return (GWDataIOInterface) c.newInstance(configfile,defaultObj);

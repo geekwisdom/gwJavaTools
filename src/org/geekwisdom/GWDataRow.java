@@ -80,7 +80,10 @@ public HashMap<String,String> toRawArray()
 	return dataItem;
 }
 
-
+public boolean has_column(String columnname)
+{
+	return dataItem.containsKey(columnname);
+}
 
 }
 
