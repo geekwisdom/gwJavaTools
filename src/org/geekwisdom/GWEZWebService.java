@@ -36,6 +36,9 @@ import java.sql.Timestamp;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
+
+import oracle.jdbc.OracleTypes;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -91,8 +94,8 @@ public class GWEZWebService {
 	newrow.set ("faultstring",faultstring);
 	if (detail !="") newrow.set ("detail",detail);
 	errormsg.add(newrow);
-	if (format == "XML") return errormsg.toXml();
-	if (format == "JSON") 
+	if (format.equalsIgnoreCase("XML")) return errormsg.toXml();
+	if (format.equalsIgnoreCase("JSON")) 
 	{
 		try 
 		 {
@@ -147,8 +150,8 @@ public class GWEZWebService {
     		
             if (this.UserName == "")
     		{
-    		if (format == "XML") return this.fault403.toXml();
-    		if (format == "JSON") return this.fault403.toJSON();
+    		if (format.equalsIgnoreCase("XML")) return this.fault403.toXml();
+    		if (format.equalsIgnoreCase("JSON")) return this.fault403.toJSON();
     		return this.fault403.toString();
     		}
     		int has_semi = UserAuthNames.indexOf(";");
@@ -169,8 +172,8 @@ public class GWEZWebService {
     		}
     		if (AccessGranted == false) 
     		{
-    		if (format == "XML") return this.fault403.toXml();
-    		if (format == "JSON") return this.fault403.toJSON();
+    		if (format.equalsIgnoreCase("XML")) return this.fault403.toXml();
+    		if (format.equalsIgnoreCase("JSON")) return this.fault403.toJSON();
     		return this.fault403.toString();
     		}
     	}             		
@@ -245,7 +248,8 @@ public class GWEZWebService {
     	else
     	{
     		//Stored Procedure Stuff
-            try
+           boolean UseOracle=false;
+    		try
             {
         	   Connection conn =null;
         	   int TestJNDI = OpSource.indexOf("java:");
@@ -255,20 +259,32 @@ public class GWEZWebService {
          	DataSource ds = (DataSource)initCtx.lookup(OpSource);
          	conn = ds.getConnection();
          	}
-
-         	// Look up our data source
          	
          		else
          		{
          			GWDBConnection dbconn = new GWDBConnection(OpSource);
+         			String driver=dbconn.getConnectInfo("driver");
+         			if (driver.indexOf("oracle") >=0) UseOracle=true;
          			conn = dbconn.getConnection();
          		}
          	
          	DatabaseMetaData dbmd = conn.getMetaData();
+         	if (UseOracle)
+         	{
+         		OPType = OPType.replace("{","{? = ");
+         	}
          	CallableStatement calStat =  conn.prepareCall(OPType);
-            	//  ArrayList<String> pvalues = new ArrayList<String>();
-         	int i=1;
          	
+         	
+            	//  ArrayList<String> pvalues = new ArrayList<String>();
+         	
+         	int i=1;
+         	if (UseOracle)
+         		{
+         		calStat.registerOutParameter (1, OracleTypes.CURSOR);
+         		i++;
+         		}
+         		
          	
          	//Iterator<Map.Entry<String,String[]>> entries = ((Map) Params).entrySet().iterator();
          	HashMap <String,String> ParamsArray = orderParams(Params);
@@ -277,21 +293,24 @@ public class GWEZWebService {
          		 String key = entry.getKey();
          	    String  value = entry.getValue();
          //		 String [] nv = parts[i].split("=");
-   		if (dbmd.supportsNamedParameters() == true)
+   		//if (dbmd.supportsNamedParameters() == true)
    			//private void setbytype(CallableStatement cs,String TypeName,String Paramname,String Paramvalue)
-   			calStat = setbytype(calStat,"varchar",key,value);
+   			//calStat = setbytype(calStat,"varchar",key,value);
    			
-    		else 
+    		//else 
     			calStat = setbytype(calStat,"varchar",i,value);
    		i++;			
 
                 }
 
-         	 //ResultSet rs = calStat.executeQuery();
+         	
+         	
          	boolean result = calStat.execute();
+         	  //ResultSet rset = (ResultSet)call.getObject (1);
          	ResultSet rs ;
          	try {
-         	rs= calStat.getResultSet();
+         	// rs= calStat.getResultSet();
+         		rs = (ResultSet) calStat.getObject (1);
          	}
          	catch  (SQLException e) {
                  // Ignore ORA-17283: No resultset available (1)
@@ -338,9 +357,9 @@ public class GWEZWebService {
 
     	
     	}
-    	   if (format == "XML") return GWServiceResults.toXml();
-           if (format == "JSON") return GWServiceResults.toJSON();
-           return GWServiceResults.toString();
+    	   if (format.equalsIgnoreCase("XML")) return GWServiceResults.toXml();
+           if (format.equalsIgnoreCase("JSON")) return GWServiceResults.toJSON();
+           return "format: " + GWServiceResults.toString();
     }
  
  

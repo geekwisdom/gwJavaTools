@@ -1,0 +1,9 @@
+CREATE OR REPLACE FUNCTION GetSetting(SettingName IN VARCHAR2) RETURN SYS_REFCURSOR
+AS 
+p_recordset SYS_REFCURSOR;
+BEGIN
+   
+  OPEN p_recordset FOR
+    SELECT * FROM Settings WHERE SETTINGNAME=SettingName;
+RETURN p_recordset;
+END GetSetting;

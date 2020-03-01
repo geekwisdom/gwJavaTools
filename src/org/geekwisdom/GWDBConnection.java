@@ -16,6 +16,7 @@ public class GWDBConnection
 private String finalconnectstring = "";
 private String un="";
 private String pw="";
+private HashMap<String,String> connectinfo = new HashMap<String,String>();
 	public GWDBConnection (String connectstr)
 {
 	File f = new File (connectstr);
@@ -30,7 +31,6 @@ private String pw="";
 	{
 	ar = connectstr.split(";");
 	}
-	HashMap<String,String> connectinfo = new HashMap<String,String>();
 	String newstr="";
 	un="";
 	pw="";
@@ -58,11 +58,14 @@ private String pw="";
    	String driver="mysql";
    	String host="localhost";
    	if (connectinfo.containsKey("driver")) driver=connectinfo.get("driver");
+   	if (driver.indexOf("sqlsrv") >=0) driver="sqlserver";
    	if (connectinfo.containsKey("host")) host=connectinfo.get("host");
-   	finalconnectstring = "jdbc:" + driver+ "://" + host;
-   	if (port != "" ) finalconnectstring = finalconnectstring + ":" + port;
-   	finalconnectstring = finalconnectstring + "/" + connectinfo.get("dbname");
-    
+   	if (driver.indexOf("oracle") >=0) finalconnectstring = "jdbc:" + driver+ ":@//" + host;
+   	else finalconnectstring = "jdbc:" + driver+ "://" + host;
+   	
+   	   	if (port != "" ) finalconnectstring = finalconnectstring + ":" + port;
+   	if (driver.equals("sqlserver")) finalconnectstring = finalconnectstring + ";databaseName=" + connectinfo.get("dbname");
+   	else finalconnectstring = finalconnectstring + "/" + connectinfo.get("dbname"); 
 	un=connectinfo.get("uid");
 	pw=connectinfo.get("pw");
 	
@@ -70,7 +73,12 @@ private String pw="";
 
 }
 
-public PreparedStatement prepare(String stmt)
+public String getConnectInfo(String keyname)
+{
+	return connectinfo.get(keyname);
+}
+	
+	public PreparedStatement prepare(String stmt)
 {
 	Connection con;
 	System.out.println(finalconnectstring);
