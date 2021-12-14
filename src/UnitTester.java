@@ -17,21 +17,26 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
+import java.util.stream.Stream;
+import java.nio.file.*;
 import org.geekwisdom.*;
 
 public class UnitTester {
 
 	public static void main(String[] args) {
+//		TestDec();
+		//TestEnc();
+		///TestData();
+	//	testhex();
 		//TestJavaDBGWQL2();
 	//	TestStudentService();
 //				TestFileIO();
 		//TestStudentService();
 		//TestData3();
 		//TestParsedCommand();
-		TestWebServiceServer();
+	//	TestWebServiceServer();
 		//TestWebServiceServer2();
-		//TestGWQL();
+	//	TestGWQL();
 		/*
 		try {
 		TestError();
@@ -40,13 +45,44 @@ public class UnitTester {
 		{
 			e.printStackTrace();
 		}*/
-	//LogUnitTest();
+	LogUnitTest();
 	//TestSettings();
 	//TestData2();
 	//TestStudent();
 	return;
 	}
 
+	public static void TestEnc()
+	{
+		GWSecSharedKeyCrypt myEnc = new GWSecSharedKeyCrypt("0123456789abcdef0123456789abcdef",null,null);
+		String enc = myEnc.encrypt("plain text","CryptTest.SimpleXOR");
+		if (enc == null) System.out.println("Encryption error!");
+		else System.out.println("Encrypted is: \n" + enc);
+	}
+	
+	public static void TestDec()
+	{
+	 //String enc="<?xml version=\"1.0\"?>\n<xmlDS>\n<table1>\n<TIMESTAMP>2020-06-23T16:35Z</TIMESTAMP>\n<METHOD>AES-256-CBC</METHOD>\n <IV>519ab61329d7dd4b4bab30948739c037</IV>\n <HMAC>78163af8c4cbb7ea246a28432563f692cde03a8b65877cbb729bb45c487d55f8</HMAC>\n <MESSAGE>w/7Bm/e9D+sg9NGViHxUtpb92EdFeOV6JH2N5VkE8ZU=</MESSAGE>\n</table1>\n</xmlDS>";
+	 /* String enc="<?xml version=\"1.0\"?>\n" + 
+	 		"<xmlDS>\n" + 
+	 		"  <root>\n" + 
+	 		"    <TIMESTAMP>2020-06-22T17:50:20+00:00</TIMESTAMP>\n" + 
+	 		"    <METHOD>AES-256-CBC</METHOD>\n" + 
+	 		"    <IV>8yAo5J1Q4SlE6UrMPL+sbQ==</IV>\n" + 
+	 		"    <HMAC>294d9f294f02f40d2260646a2bc99098295ef79d532da0b07adc6696488c75d3</HMAC>\n" + 
+	 		"    <MESSAGE>Cgg3VKxswTzFnYth1O5JIQ==</MESSAGE>\n" + 
+	 		"  </root>\n" + 
+	 		"</xmlDS>\n";
+	 		*/ 
+	 String enc =  readLineByLineJava8("c:\\temp\\v.txt");
+	 
+	 		
+		GWSecSharedKeyCrypt myEnc = new GWSecSharedKeyCrypt("0123456789abcdef0123456789abcdef",null,null);
+		String plaintext = myEnc.decrypt(enc);
+		if (plaintext == null) System.out.println("decryption error!");
+		else System.out.println("Decrypted is: \n" + plaintext);
+	
+	}
 	public static void TestGWQL()
 	{
 		String COMPARESTRING_A="[ [ A _EQ_ \"2\" ] _AND_  [ B _EQ_ \"3\"  _OR_  C _EQ_ \"1\" ] ]";
@@ -131,7 +167,7 @@ public static void TestFileIO()
 public static void TestData()
 {
 	try {
-	String xmldata = readFile("c:\\temp\\abc.xml",  StandardCharsets.UTF_8);
+	String xmldata = readFile("c:\\temp\\testme.xml",  StandardCharsets.UTF_8);
 	GWDataTable mytable = new GWDataTable();
 	mytable.loadXml(xmldata);
 	for (int i=0;i<mytable.length();i++)
@@ -457,7 +493,69 @@ static void TestJavaDBGWQL2()
      } 
 }
 
+static void testhex()
+{
+	//48656c6c6f
+	
+	//byte[] test = { 0x48,0x65,0x6C,0x6C,0x6F};
+	byte[] test = { 'H','e','l','l','o'};
+	
+	String p1=bin2hex("Hello");
+	String p2=hex2str(p1);
+	System.out.println(p2);
+	
+}
 
+private static String bin2hex(byte[] bytes) 
+    
+	 {
+	 final char[] hexArray = "0123456789abcdef".toCharArray(); 
+	char[] hexChars = new char[bytes.length * 2];
+	        for ( int j = 0; j < bytes.length; j++ ) {
+	            int v = bytes[j] & 0xFF;
+	            hexChars[j * 2] = hexArray[v >>> 4];
+	            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+	        }
+	        return new String(hexChars);
+	    }
 
+private static String bin2hex(String hexString) 
 
+{
+byte [] barray = hexString.getBytes();
+return bin2hex(barray);
+   }
+	
+		
+	private static byte [] hex2bin(String s) {
+	    int len = s.length();
+	    byte[] data = new byte[len / 2];
+	    for (int i = 0; i < len; i += 2) {
+	        data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+	                             + Character.digit(s.charAt(i+1), 16));
+	    }
+	    return data;
+	}
+
+	private static String hex2str(String s) {
+	    
+	    return new String (hex2bin(s));
+	}
+
+	   private static String readLineByLineJava8(String filePath) 
+	    {
+	        StringBuilder contentBuilder = new StringBuilder();
+	 
+	        try (Stream<String> stream = Files.lines( Paths.get(filePath), StandardCharsets.UTF_8)) 
+	        {
+	            stream.forEach(s -> contentBuilder.append(s).append("\n"));
+	        }
+	        catch (IOException e) 
+	        {
+	            e.printStackTrace();
+	        }
+	 
+	        return contentBuilder.toString();
+	    }
+	
 }

@@ -50,6 +50,7 @@ public class GWEZWebService {
 	protected String ServiceName;
 	protected String UserName;
 	protected GWDataTable fault403;
+	protected boolean UseOracle;
 
 //Constructor
 	
@@ -248,7 +249,6 @@ public class GWEZWebService {
     	else
     	{
     		//Stored Procedure Stuff
-           boolean UseOracle=false;
     		try
             {
         	   Connection conn =null;
